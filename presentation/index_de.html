@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head lang="de">
+    <meta charset="UTF-8">
+    <!--Page Title-->
+    <title>Hack-Oeil - Cyrhades CTFs</title>
+    <!--Meta Keywords and Description-->
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="shortcut icon" href="./assets/images/favicon.ico" title="Favicon" />
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <script src="./assets/js/highlight.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Vérifie si la fenêtre est dans une iframe
+            if (window.self !== window.top) {
+                document.querySelectorAll('a').forEach((link) => {
+                    link.addEventListener('click', (event) => {
+                        const a = event.target.closest('a[href^="http"]');
+                        if (a) {
+                            event.preventDefault();
+                            window.parent.postMessage({
+                                type: "open-external",
+                                url: a.href
+                            }, "*");
+                        }
+                    });
+                });
+            }
+            // Active la coloration syntaxique :
+            if (window.hljs) {
+                hljs.highlightAll();
+            } else {
+                console.error("Highlight.js non chargé !");
+            }
+        });
+    </script>
+</head>
+
+<body>
+
+    <div id="wrapper">
+        <!--Main Content Area-->
+        <main id="content">
+            <!--Ctf-->
+            <section class="ctf scrollto">
+                <article class="row clearfix">
+                    <div class="col-1">
+                        <div class="section-heading">
+                            <h3>Challenge #655</h3>
+                            <h2 class="section-title">Spidersaurus</h2>
+                            <p>
+Nach einigen Rückschlägen mit der Sprache <a href="https://hackropole.fr/fr/challenges/pwn/fcsc2023-pwn-may-the-forth/">FORTH</a> sowie der Sprache <a href="https://hackropole.fr/fr/challenges/pwn/fcsc2025-pwn-back-to-basic/">BASIC</a> hat unser Entwickler beschlossen, mit der <a href="https://ftp.mozilla.org/pub/mozilla/source/mozilla-19980603.tar.gz">Version 1.3</a> des SpiderMonkey-JavaScript-Interpreters zu den Ursprüngen des Multimedia-Internets zurückzukehren.
+<br /><br />
+Er versichert uns, dass dank der Kompilierungsparameter keine Sicherheitslücke ausnutzbar ist; zudem garantiert er uns, dass der Code für das Jahr 2000 zertifiziert (Y2K-fähig) ist.
+<br /><br />
+Ein anonymer Hacker hat uns jedoch eine mysteriöse Datei <code>test.js</code> übermittelt, die offenbar ein Lesen von nicht initialisiertem Speicher auslöst. Können Sie beweisen, dass unser Entwickler unrecht hat, indem Sie den Inhalt der Variable flag auslesen?
+<br /><br />
+<strong>Hinweis:</strong> Das Programm wurde mit <code>clang-17</code> (unter Debian 13 <em>i386</em>) kompiliert, läuft jedoch unter Debian 13 <em>amd64</em> (mit installiertem <code>libc6:i386</code>).
+                            </p>
+                            <h4>Zu untersuchende Datei(en):</h4>
+                            <ul>
+                                <li><a href="../files/JSRef.zip">JSRef.zip</a></li>
+                                <li><a href="../files/spidersaurus">spidersaurus</a></li>
+                                <li><a href="../files/spidersaurus.patch">spidersaurus.patch</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="row clearfix">
+                    <div class="col-1">
+                        <div class="section-heading">
+                            <h3>FCSC 2025</h3>
+                            <h2 class="section-title">Hackropole</h2>
+                            <p class="section-subtitle">
+                                Offizieller Link:
+                                <a target="_blank" href="https://hackropole.fr/fr/challenges/pwn/fcsc2026-pwn-spidersaurus/">https://hackropole.fr/fr/challenges/pwn/fcsc2026-pwn-spidersaurus/</a>
+                                <br />
+                                Autor: cde
+                            </p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="row clearfix">
+                    <div class="col-1">
+                        <div class="section-heading">
+                            <h3>Lernen</h3>
+                            <h2 class="section-title">Dokumentation und Videos</h2>
+                            <p class="section-subtitle">
+                                Zurzeit ist keine Dokumentation verfügbar
+                            </p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="row clearfix">
+                    <div class="col-1">
+                        <div class="section-heading">
+                            <h3>Hilfe</h3>
+                            <h2 class="section-title">Tipps und Hinweise</h2>
+                            <p class="section-subtitle">
+                                <a target="_blank"
+                                    href="https://discord.com/channels/1175764392307077120/1175764601716092948">Thread auf Discord</a>
+                            </p>
+                        </div>
+                    </div>
+                </article>
+            </section>
+            <!--End of Ctf-->
+        </main>
+        <!--End Main Content Area-->
+
+        <a id="scrollUp" href="#wrapper" style="position: fixed; z-index: 1000;"
+            aria-label="Zurück nach oben" title="Zurück nach oben"></a>
+    </div>
+</body>
+
+</html>

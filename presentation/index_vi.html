@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head lang="vi">
+    <meta charset="UTF-8">
+    <!--Page Title-->
+    <title>Hack-Oeil - Cyrhades CTF</title>
+    <!--Meta Keywords and Description-->
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="shortcut icon" href="./assets/images/favicon.ico" title="Favicon" />
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <script src="./assets/js/highlight.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Vérifie si la fenêtre est dans une iframe
+            if (window.self !== window.top) {
+                document.querySelectorAll('a').forEach((link) => {
+                    link.addEventListener('click', (event) => {
+                        const a = event.target.closest('a[href^="http"]');
+                        if (a) {
+                            event.preventDefault();
+                            window.parent.postMessage({
+                                type: "open-external",
+                                url: a.href
+                            }, "*");
+                        }
+                    });
+                });
+            }
+            // Active la coloration syntaxique :
+            if (window.hljs) {
+                hljs.highlightAll();
+            } else {
+                console.error("Highlight.js non chargé !");
+            }
+        });
+    </script>
+</head>
+
+<body>
+
+    <div id="wrapper">
+        <!--Main Content Area-->
+        <main id="content">
+            <!--Ctf-->
+            <section class="ctf scrollto">
+                <article class="row clearfix">
+                    <div class="col-1">
+                        <div class="section-heading">
+                            <h3>Challenge #655</h3>
+                            <h2 class="section-title">Spidersaurus</h2>
+                            <p>
+Sau một vài sự cố với ngôn ngữ <a href="https://hackropole.fr/fr/challenges/pwn/fcsc2023-pwn-may-the-forth/">FORTH</a> cũng như ngôn ngữ <a href="https://hackropole.fr/fr/challenges/pwn/fcsc2025-pwn-back-to-basic/">BASIC</a>, nhà phát triển của chúng tôi đã quyết định quay trở lại cội nguồn của Internet Đa phương tiện bằng cách sử dụng trình thông dịch JavaScript SpiderMonkey <a href="https://ftp.mozilla.org/pub/mozilla/source/mozilla-19980603.tar.gz">phiên bản 1.3</a>.
+<br /><br />
+Anh ấy đảm bảo với chúng tôi rằng không có lỗ hổng bảo mật nào có thể khai thác được nhờ vào các tham số biên dịch; ngoài ra, anh ấy còn đảm bảo rằng mã đã được chứng nhận cho sự chuyển giao thiên niên kỷ (sự cố năm 2000).
+<br /><br />
+Tuy nhiên, một tin tặc ẩn danh đã gửi cho chúng tôi một tệp <code>test.js</code> bí ẩn dường như kích hoạt việc đọc bộ nhớ chưa được khởi tạo. Bạn có thể chứng minh rằng nhà phát triển của chúng tôi đã sai bằng cách đọc nội dung của biến flag không?
+<br /><br />
+<strong>Lưu ý:</strong> Chương trình được biên dịch bằng <code>clang-17</code> (trên Debian 13 <em>i386</em>), nhưng thực thi trên Debian 13 <em>amd64</em> (đã cài đặt <code>libc6:i386</code>).
+                            </p>
+                            <h4>Tệp cần nghiên cứu:</h4>
+                            <ul>
+                                <li><a href="../files/JSRef.zip">JSRef.zip</a></li>
+                                <li><a href="../files/spidersaurus">spidersaurus</a></li>
+                                <li><a href="../files/spidersaurus.patch">spidersaurus.patch</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="row clearfix">
+                    <div class="col-1">
+                        <div class="section-heading">
+                            <h3>FCSC 2025</h3>
+                            <h2 class="section-title">Hackropole</h2>
+                            <p class="section-subtitle">
+                                Liên kết chính thức:
+                                <a target="_blank" href="https://hackropole.fr/fr/challenges/pwn/fcsc2026-pwn-spidersaurus/">https://hackropole.fr/fr/challenges/pwn/fcsc2026-pwn-spidersaurus/</a>
+                                <br />
+                                Tác giả: cde
+                            </p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="row clearfix">
+                    <div class="col-1">
+                        <div class="section-heading">
+                            <h3>Học tập</h3>
+                            <h2 class="section-title">Tài liệu và Video</h2>
+                            <p class="section-subtitle">
+                                Hiện chưa có tài liệu nào
+                            </p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="row clearfix">
+                    <div class="col-1">
+                        <div class="section-heading">
+                            <h3>Trợ giúp</h3>
+                            <h2 class="section-title">Lời khuyên và gợi ý</h2>
+                            <p class="section-subtitle">
+                                <a target="_blank"
+                                    href="https://discord.com/channels/1175764392307077120/1175764601716092948">Luồng trên Discord</a>
+                            </p>
+                        </div>
+                    </div>
+                </article>
+            </section>
+            <!--End of Ctf-->
+        </main>
+        <!--End Main Content Area-->
+
+        <a id="scrollUp" href="#wrapper" style="position: fixed; z-index: 1000;"
+            aria-label="Quay lại đầu trang" title="Quay lại đầu trang"></a>
+    </div>
+</body>
+
+</html>

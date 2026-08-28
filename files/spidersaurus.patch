@@ -1,0 +1,293 @@
+diff -Nur ../JSRef/Makefile ./Makefile
+--- ../JSRef/Makefile	1998-06-03 16:48:53.000000000 +0000
++++ ./Makefile	2026-03-16 17:25:42.382106104 +0000
+@@ -43,7 +43,7 @@
+ include config/$(OS_CONFIG).mk
+ 
+ ifdef BUILD_OPT
+-OPTIMIZER  += -O
++OPTIMIZER  += -O2 -g
+ DEFINES    += -UDEBUG -DNDEBUG -UDEBUG_$(shell whoami)
+ OBJDIR_TAG = _OPT
+ else
+@@ -198,7 +198,7 @@
+ PROGRAM = $(OBJDIR)/js
+ else
+ LIBRARY = $(OBJDIR)/libjs.a
+-PROGRAM = $(OBJDIR)/js
++PROGRAM = $(OBJDIR)/spidersaurus
+ endif
+ 
+ ifdef USE_MSVC
+diff -Nur ../JSRef/SOURCE ./SOURCE
+--- ../JSRef/SOURCE	1970-01-01 00:00:00.000000000 +0000
++++ ./SOURCE	2026-03-16 17:25:42.386106104 +0000
+@@ -0,0 +1,2 @@
++https://ftp.mozilla.org/pub/mozilla/source/mozilla-19980603.tar.gz
++93e495961763ded95177783694317d5ee871a5b66fd4e9f888a5b076533d0af6  mozilla-19980603.tar.gz
+diff -Nur ../JSRef/config/Linux_All.mk ./config/Linux_All.mk
+--- ../JSRef/config/Linux_All.mk	1998-06-03 16:48:58.000000000 +0000
++++ ./config/Linux_All.mk	2026-03-16 17:25:42.374106104 +0000
+@@ -16,8 +16,10 @@
+ 
+ # Config for all versions of Linux
+ 
+-CC = gcc -Wall -Wno-format
+-CCC = g++ -Wall -Wno-format
++# from https://blog.quarkslab.com/clang-hardening-cheat-sheet-ten-years-later.html
++CC = clang-17 -Wall -Wformat -Wformat=2 -Wconversion -Wimplicit-fallthrough -Werror=format-security -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3 -D_GLIBCXX_ASSERTIONS -fstrict-flex-arrays=3 -fstack-clash-protection -fstack-protector-all -Wl,-z,nodlopen -Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now -Wl,--as-needed -Wl,--no-copy-dt-needed-entries
++
++BUILD_OPT = 1
+ 
+ RANLIB = echo
+ 
+diff -Nur ../JSRef/js.c ./js.c
+--- ../JSRef/js.c	1998-06-03 16:48:53.000000000 +0000
++++ ./js.c	2026-03-16 17:25:42.374106104 +0000
+@@ -92,7 +92,7 @@
+     if (!filename)
+ 	ts->filename = "typein";
+ #endif
+-    if (isatty(fileno(ts->file))) {
++    if (0) {
+ 	ts->flags |= TSF_INTERACTIVE;
+     } else {
+         /* Support the UNIX #! shell hack; gobble the first line if it starts
+@@ -776,16 +776,15 @@
+ 
+ static JSFunctionSpec shell_functions[] = {
+     {"version",         Version,        0},
+-    {"load",            Load,           1},
+     {"print",           Print,          0},
+     {"help",            Help,           0},
+     {"quit",            Quit,           0},
+     {"gc",              GC,             0},
++#ifdef DEBUG
+     {"trap",            Trap,           3},
+     {"untrap",          Untrap,         2},
+     {"line2pc",         LineToPC,       0},
+     {"pc2line",         PCToLine,       0},
+-#ifdef DEBUG
+     {"dis",             Disassemble,    1},
+     {"dissrc",          DisassWithSrc,  1},
+     {"notes",           Notes,          1},
+@@ -805,16 +804,15 @@
+ 
+ static char *shell_help_messages[] = {
+     "version [number]       Get or set JavaScript version number",
+-    "load ['foo.js' ...]    Load files named by string arguments",
+     "print [expr ...]       Evaluate and print expressions",
+     "help [name ...]        Display usage and help messages",
+     "quit                   Quit mocha",
+     "gc                     Run the garbage collector",
++#ifdef DEBUG
+     "trap [fun] [pc] expr   Trap bytecode execution",
+     "untrap [fun] [pc]      Remove a trap",
+     "line2pc [fun] line     Map line number to PC",
+     "pc2line [fun] [pc]     Map PC to line number",
+-#ifdef DEBUG
+     "dis [fun]              Disassemble functions into bytecodes",
+     "dissrc [fun]           Disassemble functions with source lines",
+     "notes [fun]            Show source notes for functions",
+@@ -1157,6 +1155,9 @@
+     JSContext *cx;
+     JSObject *glob, *it;
+ 
++    FILE *flag_txt;
++    char *flag, *buf;
++
+ #ifdef XP_OS2
+    /* these streams are normally line buffered on OS/2 and need a \n, *
+     * so we need to unbuffer then to get a reasonable prompt          */
+@@ -1164,6 +1165,21 @@
+     setbuf(stderr,0);
+ #endif
+ 
++    setvbuf(stdout, NULL, _IONBF, 0);
++
++    flag_txt = fopen("flag.txt", "r");
++    buf = malloc(1024); flag = buf + 98;
++    if (flag_txt == NULL) {
++        fprintf(stderr, "failed to open flag.txt\n");
++        return 1;
++    }
++    if (buf == NULL || (unsigned int)(flag) & 0xFF != 0x42) {
++	fprintf(stderr, "failed to position flag\n", flag);
++	return 1;
++    }
++    fread(flag, 26, 1, flag_txt);
++    //printf("%08x\n", flag);
++
+     version = JSVERSION_DEFAULT;
+ #ifdef XP_UNIX
+     while ((c = getopt(argc, argv, "v:")) != -1) {
+@@ -1210,6 +1226,8 @@
+     if (!JS_DefineProperties(cx, it, its_props))
+ 	return 1;
+ 
++    GC(cx, NULL, 0, NULL, NULL);
++
+ #ifdef LIVECONNECT
+ 	if (!JSJ_SimpleInit(cx, glob, NULL, getenv("CLASSPATH")))
+             return 1;
+diff -Nur ../JSRef/jsconfig.h ./jsconfig.h
+--- ../JSRef/jsconfig.h	1998-06-03 16:48:54.000000000 +0000
++++ ./jsconfig.h	2026-03-16 17:25:42.378106104 +0000
+@@ -195,7 +195,7 @@
+ #define JS_HAS_SHARP_VARS       1       /* has #n=, #n# for object literals */
+ #define JS_HAS_REPLACE_LAMBDA   1       /* has string.replace(re, lambda) */
+ #define JS_HAS_SCRIPT_OBJECT    1       /* has (new Script("x++")).exec() */
+-#define JS_HAS_XDR		1	/* has XDR API and object methods */
++#define JS_HAS_XDR		0	/* has XDR API and object methods */
+ #define JS_HAS_EXCEPTIONS	0	/* has exception handling */
+ #define JS_HAS_UNDEFINED        1       /* has global "undefined" property */
+ #define JS_HAS_TOSOURCE         1       /* has Object/Array toSource method */
+diff -Nur ../JSRef/jsinterp.c ./jsinterp.c
+--- ../JSRef/jsinterp.c	1998-06-03 16:48:55.000000000 +0000
++++ ./jsinterp.c	2026-03-16 17:25:42.378106104 +0000
+@@ -20,6 +20,7 @@
+  * JavaScript bytecode interpreter.
+  */
+ #include "jsstddef.h"
++#include <assert.h>
+ #include <stdio.h>
+ #include <string.h>
+ #include <math.h>
+@@ -311,7 +312,7 @@
+ 	/* Find most recent non-native function frame. */
+ 	if (fp->fun && !fp->fun->call) {
+ 	    if (fp->fun == fun) {
+-		PR_ASSERT((uintN)JSVAL_TO_INT(id) < fp->fun->nargs);
++		assert((uintN)JSVAL_TO_INT(id) < fp->fun->nargs);
+ 		*vp = fp->argv[JSVAL_TO_INT(id)];
+ 	    }
+ 	    return JS_TRUE;
+@@ -332,7 +333,7 @@
+ 	/* Find most recent non-native function frame. */
+ 	if (fp->fun && !fp->fun->call) {
+ 	    if (fp->fun == fun) {
+-		PR_ASSERT((uintN)JSVAL_TO_INT(id) < fp->fun->nargs);
++		assert((uintN)JSVAL_TO_INT(id) < fp->fun->nargs);
+ 		fp->argv[JSVAL_TO_INT(id)] = *vp;
+ 	    }
+ 	    return JS_TRUE;
+@@ -355,7 +356,7 @@
+ 	if (fp->fun && !fp->fun->call) {
+ 	    if (fp->fun == fun) {
+ 		slot = JSVAL_TO_INT(id);
+-		PR_ASSERT((uintN)slot < fp->fun->nvars);
++		assert((uintN)slot < fp->fun->nvars);
+ 		if ((uintN)slot < fp->nvars)
+ 		    *vp = fp->vars[slot];
+ 	    }
+@@ -379,7 +380,7 @@
+ 	if (fp->fun && !fp->fun->call) {
+ 	    if (fp->fun == fun) {
+ 		slot = JSVAL_TO_INT(id);
+-		PR_ASSERT((uintN)slot < fp->fun->nvars);
++		assert((uintN)slot < fp->fun->nvars);
+ 		if ((uintN)slot < fp->nvars)
+ 		    fp->vars[slot] = *vp;
+ 	    }
+@@ -1987,7 +1988,7 @@
+ 	  case JSOP_ARGINC:
+ 	  case JSOP_ARGDEC:
+ 	    slot = (uintN)GET_ARGNO(pc);
+-	    PR_ASSERT(slot < fp->fun->nargs);
++	    assert(slot < fp->fun->nargs);
+ 	    rval = fp->argv[slot];
+ 	    VALUE_TO_NUMBER(cx, rval, d);
+ 
+@@ -2009,7 +2010,7 @@
+ 	  case JSOP_VARINC:
+ 	  case JSOP_VARDEC:
+ 	    slot = (uintN)GET_VARNO(pc);
+-	    PR_ASSERT(slot < fp->fun->nvars);
++	    assert(slot < fp->fun->nvars);
+ 	    rval = fp->vars[slot];
+ 	    VALUE_TO_NUMBER(cx, rval, d);
+ 
+@@ -2409,14 +2410,14 @@
+ 	  case JSOP_GETARG:
+ 	    obj = NULL;
+ 	    slot = (uintN)GET_ARGNO(pc);
+-	    PR_ASSERT(slot < fp->fun->nargs);
++	    assert(slot < fp->fun->nargs);
+ 	    PUSH_OPND(fp->argv[slot]);
+ 	    break;
+ 
+ 	  case JSOP_SETARG:
+ 	    obj = NULL;
+ 	    slot = (uintN)GET_ARGNO(pc);
+-	    PR_ASSERT(slot < fp->fun->nargs);
++	    assert(slot < fp->fun->nargs);
+ 	    vp = &fp->argv[slot];
+ 	    GC_POKE(cx, *vp);
+ 	    *vp = sp[-1];
+@@ -2425,14 +2426,14 @@
+ 	  case JSOP_GETVAR:
+ 	    obj = NULL;
+ 	    slot = (uintN)GET_VARNO(pc);
+-	    PR_ASSERT(slot < fp->fun->nvars);
++	    assert(slot < fp->fun->nvars);
+ 	    PUSH_OPND(fp->vars[slot]);
+ 	    break;
+ 
+ 	  case JSOP_SETVAR:
+ 	    obj = NULL;
+ 	    slot = (uintN)GET_VARNO(pc);
+-	    PR_ASSERT(slot < fp->fun->nvars);
++	    assert(slot < fp->fun->nvars);
+ 	    vp = &fp->vars[slot];
+ 	    GC_POKE(cx, *vp);
+ 	    *vp = sp[-1];
+diff -Nur ../JSRef/jsparse.c ./jsparse.c
+--- ../JSRef/jsparse.c	1998-06-03 16:48:56.000000000 +0000
++++ ./jsparse.c	2026-03-16 17:25:42.382106104 +0000
+@@ -1226,6 +1226,8 @@
+ 		}
+ 		if (stmt->type == STMT_LABEL && stmt->label == label)
+ 		    break;
++		if (stmt->type > STMT_WHILE_LOOP)
++		    printf("invalid stmt->type %d\n", stmt->type);
+ 	    }
+ 	} else {
+ 	    for (; ; stmt = stmt->down) {
+diff -Nur ../JSRef/jsscan.c ./jsscan.c
+--- ../JSRef/jsscan.c	1998-06-03 16:48:56.000000000 +0000
++++ ./jsscan.c	2026-03-16 17:52:38.638097724 +0000
+@@ -319,6 +319,7 @@
+ 			ubuf[i] = (jschar) cbuf[j];
+ 		    ts->userbuf.limit = ubuf + len;
+ 		    ts->userbuf.ptr = ubuf;
++		    memset(cbuf, 0, sizeof(cbuf));
+ 		} else
+ #endif /* JSFILE */
+ 		{
+diff -Nur ../JSRef/os/linux.h ./os/linux.h
+--- ../JSRef/os/linux.h	1998-06-03 16:49:13.000000000 +0000
++++ ./os/linux.h	2026-03-16 17:25:42.382106104 +0000
+@@ -19,7 +19,6 @@
+ #ifndef nspr_linux_defs_h___
+ #define nspr_linux_defs_h___
+ 
+-#include <linux/autoconf.h>
+ #undef	HAVE_LONG_LONG
+ #undef	HAVE_ALIGNED_DOUBLES
+ #undef	HAVE_ALIGNED_LONGLONGS
+diff -Nur ../JSRef/test.js ./test.js
+--- ../JSRef/test.js	1970-01-01 00:00:00.000000000 +0000
++++ ./test.js	2026-03-16 17:25:42.386106104 +0000
+@@ -0,0 +1,12 @@
++print("_bonjour_")
++var x = ÿ;
++for (3;2;1)
++{
++	while (0)
++	{
++		if ÿ(0)
++		{
++			break FCSC_2026
++		}
++	}
++}

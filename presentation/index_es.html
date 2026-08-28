@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head lang="es">
+    <meta charset="UTF-8">
+    <!--Page Title-->
+    <title>Hack-Oeil - Los CTF de Cyrhades</title>
+    <!--Meta Keywords and Description-->
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="shortcut icon" href="./assets/images/favicon.ico" title="Favicon" />
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <script src="./assets/js/highlight.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Vérifie si la fenêtre est dans une iframe
+            if (window.self !== window.top) {
+                document.querySelectorAll('a').forEach((link) => {
+                    link.addEventListener('click', (event) => {
+                        const a = event.target.closest('a[href^="http"]');
+                        if (a) {
+                            event.preventDefault();
+                            window.parent.postMessage({
+                                type: "open-external",
+                                url: a.href
+                            }, "*");
+                        }
+                    });
+                });
+            }
+            // Active la coloration syntaxique :
+            if (window.hljs) {
+                hljs.highlightAll();
+            } else {
+                console.error("Highlight.js non chargé !");
+            }
+        });
+    </script>
+</head>
+
+<body>
+
+    <div id="wrapper">
+        <!--Main Content Area-->
+        <main id="content">
+            <!--Ctf-->
+            <section class="ctf scrollto">
+                <article class="row clearfix">
+                    <div class="col-1">
+                        <div class="section-heading">
+                            <h3>Challenge #655</h3>
+                            <h2 class="section-title">Spidersaurus</h2>
+                            <p>
+Tras algunos contratiempos con el lenguaje <a href="https://hackropole.fr/fr/challenges/pwn/fcsc2023-pwn-may-the-forth/">FORTH</a>, así como con el lenguaje <a href="https://hackropole.fr/fr/challenges/pwn/fcsc2025-pwn-back-to-basic/">BASIC</a>, nuestro desarrollador decidió volver a los orígenes de la Internet multimedia utilizando la <a href="https://ftp.mozilla.org/pub/mozilla/source/mozilla-19980603.tar.gz">versión 1.3</a> del intérprete de JavaScript SpiderMonkey.
+<br /><br />
+Nos asegura que no se puede explotar ninguna vulnerabilidad de seguridad gracias a los parámetros de compilación; además, nos garantiza que el código está certificado para el paso al año 2000.
+<br /><br />
+Sin embargo, un hacker anónimo nos envió un misterioso archivo <code>test.js</code> que parece provocar una lectura de memoria no inicializada. ¿Puedes demostrar que nuestro desarrollador se equivoca leyendo el contenido de la variable flag?
+<br /><br />
+<strong>Nota:</strong> El programa está compilado con <code>clang-17</code> (en Debian 13 <em>i386</em>), pero se ejecuta en Debian 13 <em>amd64</em> (con <code>libc6:i386</code> instalado).
+                            </p>
+                            <h4>Archivo(s) para estudiar:</h4>
+                            <ul>
+                                <li><a href="../files/JSRef.zip">JSRef.zip</a></li>
+                                <li><a href="../files/spidersaurus">spidersaurus</a></li>
+                                <li><a href="../files/spidersaurus.patch">spidersaurus.patch</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="row clearfix">
+                    <div class="col-1">
+                        <div class="section-heading">
+                            <h3>FCSC 2025</h3>
+                            <h2 class="section-title">Hackropole</h2>
+                            <p class="section-subtitle">
+                                Enlace oficial:
+                                <a target="_blank" href="https://hackropole.fr/fr/challenges/pwn/fcsc2026-pwn-spidersaurus/">https://hackropole.fr/fr/challenges/pwn/fcsc2026-pwn-spidersaurus/</a>
+                                <br />
+                                Autor: cde
+                            </p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="row clearfix">
+                    <div class="col-1">
+                        <div class="section-heading">
+                            <h3>Aprendizaje</h3>
+                            <h2 class="section-title">Documentación y Videos</h2>
+                            <p class="section-subtitle">
+                                No hay documentación disponible por el momento
+                            </p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="row clearfix">
+                    <div class="col-1">
+                        <div class="section-heading">
+                            <h3>Ayuda</h3>
+                            <h2 class="section-title">Consejos y pistas</h2>
+                            <p class="section-subtitle">
+                                <a target="_blank"
+                                    href="https://discord.com/channels/1175764392307077120/1175764601716092948">Hilo en Discord</a>
+                            </p>
+                        </div>
+                    </div>
+                </article>
+            </section>
+            <!--End of Ctf-->
+        </main>
+        <!--End Main Content Area-->
+
+        <a id="scrollUp" href="#wrapper" style="position: fixed; z-index: 1000;"
+            aria-label="Volver arriba" title="Volver arriba"></a>
+    </div>
+</body>
+
+</html>
