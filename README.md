@@ -1,4 +1,4 @@
-# FCSC 2025 Spidersaurus
+# FCSC 2026 Spidersaurus
 
 Suite à quelques déboires avec le langage [FORTH](https://hackropole.fr/fr/challenges/pwn/fcsc2023-pwn-may-the-forth/), ainsi que le langage [BASIC](https://hackropole.fr/fr/challenges/pwn/fcsc2025-pwn-back-to-basic/), notre développeur a décidé d’un retour aux origines de l’Internet Multimédia à l’aide de la [version 1.3](https://ftp.mozilla.org/pub/mozilla/source/mozilla-19980603.tar.gz) de l’interpréteur JavaScript SpiderMonkey.
 
